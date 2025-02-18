@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kantin2_ukk/screens/pages/siswa/historySiswa.dart';
 import 'package:kantin2_ukk/screens/pages/siswa/homeSiswa.dart';
 import 'package:kantin2_ukk/screens/pages/siswa/profileSiswa.dart';
-import 'package:kantin2_ukk/screens/widget/navbar.dart';
+import 'package:kantin2_ukk/screens/components/navbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

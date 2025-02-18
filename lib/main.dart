@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kantin2_ukk/screens/pages/siswa/homeSiswa.dart';
 import 'package:kantin2_ukk/screens/pages/loginPage.dart';
 import 'package:kantin2_ukk/screens/pages/signupPage.dart';
-import 'package:kantin2_ukk/screens/widget/card_stan.dart';
+import 'package:kantin2_ukk/screens/components/cardStan.dart';
 
 void main() {
   runApp(const MyApp());

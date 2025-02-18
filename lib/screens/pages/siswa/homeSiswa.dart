@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kantin2_ukk/screens/widget/bottomNavbar.dart';
-import 'package:kantin2_ukk/screens/widget/card_stan.dart';
+import 'package:kantin2_ukk/screens/components/bottomNavbar.dart';
+import 'package:kantin2_ukk/screens/components/cardStan.dart';
 
 class HomePageSiswa extends StatefulWidget {
   const HomePageSiswa({super.key});
