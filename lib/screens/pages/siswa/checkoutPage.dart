@@ -114,7 +114,62 @@ class _CheckoutPageState extends State<CheckoutPage> {
               DiscountInfo(),
               SizedBox(height: 13),
               Priceinfo(price: 'Rp.$totalPrice'),
-              SizedBox(height: 24)
+              SizedBox(height: 24),
+              Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }, 
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffD74339),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xffD74339),),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
+                        )
+                      ),
+                      child: Text(
+                        "Selesaikan Pesanan",
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white
+                        ),
+                      )
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: (){
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }, 
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffD74339),
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: Color(0xffD74339),),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)
+                        )
+                      ),
+                      child: Text(
+                        "Print Pesanan",
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white
+                        ),
+                      )
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),
