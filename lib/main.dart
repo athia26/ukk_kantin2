@@ -15,13 +15,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
-      initialRoute: '/home',
+      initialRoute: '/login',
       routes: {
         '/home': (context) => HomePageSiswa(),
+        '/login': (context) => LoginPage(),
       },
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: HomePageSiswa(),
+      
     );
   }
 }

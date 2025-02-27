@@ -1,6 +1,8 @@
 //import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:kantin2_ukk/screens/pages/addDataStan.dart';
 import 'package:kantin2_ukk/screens/pages/loginPage.dart';
+import 'package:kantin2_ukk/screens/pages/siswa/homeSiswa.dart';
 
 
 class SignupPage extends StatefulWidget {
@@ -12,8 +14,8 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _namaController = TextEditingController();
-  final TextEditingController _telpController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isInvisible = true;
   List<String> items = ['Siswa', 'Admin stan']; //daftar dropdown 
@@ -21,8 +23,8 @@ class _SignupPageState extends State<SignupPage> {
 
   bool get isFormValid {
     return _namaController.text.isNotEmpty &&
-    _telpController.text.isNotEmpty &&
     _emailController.text.isNotEmpty &&
+    _usernameController.text.isNotEmpty &&
     _passwordController.text.isNotEmpty &&
     selectedRole != null;
   } 
@@ -42,7 +44,7 @@ class _SignupPageState extends State<SignupPage> {
                   const Padding(
                     padding: const EdgeInsets.only(top: 50.0),
                     child: const Text(
-                      "Sign Up", 
+                      "Buat Akunmu", 
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         fontSize: 30,
@@ -51,7 +53,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   SizedBox(height: 5),
                   const Text(
-                    "Create an Account",
+                    "Yuk, buat akun baru!",
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 18,
@@ -86,7 +88,7 @@ class _SignupPageState extends State<SignupPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Nama Kamu",
+                            labelText: "Nama Lengkap",
                             floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -102,42 +104,7 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ),
         
-                      //input no telp
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20, top: 10),
-                        child: TextFormField(
-                          style: const TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w300,
-                          ),
-                          controller: _telpController,
-                          decoration: const InputDecoration(
-                      
-                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color(0xffD74339),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey
-                              )),
-                            labelText: "No Telepon Kamu",
-                            floatingLabelStyle: TextStyle(
-                              color: Color(0xffD74339),
-                              fontFamily: 'Outfit',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300,  
-                            ),
-                            labelStyle: TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300,  
-                            ),
-                          ),
-                        ),
-                      ),
+                    
         
                       //input email
                       Padding(
@@ -161,7 +128,45 @@ class _SignupPageState extends State<SignupPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Email Kamu",
+                            labelText: "Email ",
+                            floatingLabelStyle: TextStyle(
+                              color: Color(0xffD74339),
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,  
+                            ),
+                            labelStyle: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,  
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //input username
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20, top: 10),
+                        child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                      
+                             focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xffD74339),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey
+                              )),
+                            labelText: "Username",
                             floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -199,7 +204,7 @@ class _SignupPageState extends State<SignupPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Password kamu",
+                            labelText: "Password",
                             floatingLabelStyle: const TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -234,9 +239,9 @@ class _SignupPageState extends State<SignupPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 5.0, bottom: 3),
-                              child: const Text(
+                            const Padding(
+                              padding:  EdgeInsets.only(left: 5.0, bottom: 3),
+                              child:  Text(
                                 "Pilih role akunmu",
                                 style: TextStyle(
                                   fontFamily: 'Outfit',
@@ -261,7 +266,7 @@ class _SignupPageState extends State<SignupPage> {
                                       fontWeight: FontWeight.w300,
                                   ),
                                   value: selectedRole,
-                                  hint: const Text("Select", style: TextStyle(
+                                  hint: const Text("Pilih", style: TextStyle(
                                     fontSize: 14,
                                   ),),
                                   isExpanded: true,
@@ -294,7 +299,7 @@ class _SignupPageState extends State<SignupPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Already have an account?",
+                              const Text("Sudah punya akun?",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Outfit',
@@ -308,7 +313,7 @@ class _SignupPageState extends State<SignupPage> {
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                                 },
-                                child: const Text("Login here",
+                                child: const Text("Masuk di sini",
                                 style: TextStyle(
                                   color: Color(0xffD74339),
                                   fontFamily: 'Outfit',
@@ -337,13 +342,25 @@ class _SignupPageState extends State<SignupPage> {
                               foregroundColor: Colors.white
                             ),
                             onPressed: isFormValid ? (){
+                              if (selectedRole == "Siswa"){
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (context) => HomePageSiswa()));
+                              }
+                              else{
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (context) => AddDataStan()));
+                              }
                               //isi if pilih siswa masuk halaman siswa, else masuk admin stan 
         
                             }
                               : null, //ketika tidak full diisi elevated button akan tdk bisa ditekan 
-                            child: const Text(
-                              "Sign Up",
-                              style:  TextStyle(
+                            child: Text(
+                              selectedRole == "Siswa" ? "Daftar" : "Selanjutnya",
+                              style: const TextStyle(
                                 fontFamily: 'Outfit',
                                 color: Colors.white,
                                 fontSize: 18,

@@ -115,6 +115,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               SizedBox(height: 13),
               Priceinfo(price: 'Rp.$totalPrice'),
               SizedBox(height: 24),
+
               Column(
                 children: [
                   SizedBox(
@@ -131,41 +132,46 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           borderRadius: BorderRadius.circular(12)
                         )
                       ),
-                      child: Text(
+                      child: const Text(
                         "Selesaikan Pesanan",
                         style: TextStyle(
                           fontFamily: 'Outfit',
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white
                         ),
                       )
                     ),
                   ),
+                  SizedBox(height: 13),
 
+                  
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: (){
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }, 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffD74339),
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: Color(0xffD74339),),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: ElevatedButton(
+                        onPressed: (){
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xffD74339),
+                          padding: EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(color: Color(0xffD74339),),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)
+                          )
+                        ),
+                        child: const Text(
+                          "Print Pesanan",
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white
+                          ),
                         )
                       ),
-                      child: Text(
-                        "Print Pesanan",
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white
-                        ),
-                      )
                     ),
                   ),
                 ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DiscountInfo extends StatefulWidget {
@@ -32,7 +31,7 @@ class _DiscountInfoState extends State<DiscountInfo> {
             'Use Discount',
             style:  TextStyle(
               fontFamily: 'Outfit',
-              fontSize: 12,
+              fontSize: 17,
               fontWeight: FontWeight.w400,
               color: Color(0xffD74339),
             ),

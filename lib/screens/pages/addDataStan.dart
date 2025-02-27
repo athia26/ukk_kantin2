@@ -1,30 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:kantin2_ukk/screens/pages/admin/homeAdmin.dart';
 import 'package:kantin2_ukk/screens/pages/signupPage.dart';
 
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class AddDataStan extends StatefulWidget {
+  const AddDataStan({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<AddDataStan> createState() => _AddDataStanState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isInvisible = true; 
+class _AddDataStanState extends State<AddDataStan> {
+  final TextEditingController _namaStanController = TextEditingController();
+  final TextEditingController _namaPemilikController = TextEditingController();
+  final TextEditingController _noTelpController = TextEditingController();
 
   bool get isFormValid {
-    return 
-    _emailController.text.isNotEmpty &&
-    _passwordController.text.isNotEmpty;
+    return _namaStanController.text.isNotEmpty &&
+    _namaPemilikController.text.isNotEmpty &&
+    _noTelpController.text.isNotEmpty;
+    
   } 
-
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -36,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
                   const Padding(
                     padding:  EdgeInsets.only(top: 50.0),
                     child:  Text(
-                      "Login Dulu", 
+                      "Tambah Data Stan", 
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         fontSize: 30,
@@ -46,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
         
                   const SizedBox(height: 5),
                   const Text(
-                    "Ayo lanjut ke akunmu!",
+                    "Selesaikan pendaftaran stan",
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       fontSize: 18,
@@ -67,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
                           ),
-                          controller: _emailController,
+                          controller: _namaStanController,
                           decoration: const InputDecoration(
                       
                              focusedBorder: OutlineInputBorder(
@@ -79,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Email Kamu",
+                            labelText: "Nama Stan",
                             floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -99,14 +98,14 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                         padding: const EdgeInsets.only(right: 20, top: 20),
                         child: TextFormField(
-                          obscureText: _isInvisible,
+                          
                           style: const TextStyle(
                             fontFamily: 'Outfit',
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
                           ),
-                          controller: _passwordController,
-                          decoration:  InputDecoration(
+                          controller: _namaPemilikController,
+                          decoration:  const InputDecoration(
                       
                              focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
@@ -117,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Password kamu",
+                            labelText: "Nama Pemilik",
                             floatingLabelStyle: const TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -130,59 +129,55 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.w300,  
                             ),
                             
-                            suffixIcon: IconButton(
-                              onPressed: (){
-                                setState(() {
-                                  _isInvisible =! _isInvisible;
-                                });
-                              },
-                              icon: Icon( 
-                                _isInvisible ? Icons.visibility : Icons.visibility_off,
-                                size: 17, 
-                                color:  Colors.grey 
+                            
+                          ),
+                        ),
+                      ),
+
+                      //input notelp
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20, top: 20),
+                        child: TextFormField(
+                          
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          controller: _noTelpController,
+                          decoration:  const InputDecoration(
+                      
+                             focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xffD74339),
                               ),
                             ),
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey
+                              )),
+                            labelText: "No Telepon",
+                            floatingLabelStyle: const TextStyle(
+                              color: Color(0xffD74339),
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,  
+                            ),
+                            labelStyle: const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,  
+                            ),
+                            
+                            
                           ),
                         ),
                       ),
         
-                      Padding(
-                        padding: const EdgeInsets.only(top: 300, right: 20),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text("Don't have an account?",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'Outfit',
-                                fontSize: 12, 
-                                fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              
-                              InkWell(
-                                onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
-                                },
-                                child: const Text("Sign Up here",
-                                style: TextStyle(
-                                  color: Color(0xffD74339),
-                                  fontFamily: 'Outfit',
-                                  fontSize: 12, 
-                                  fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                        ),
-                      ),
+                      
         
                       Padding(
-                        padding: const EdgeInsets.only(top: 90, right: 20),
+                        padding: const EdgeInsets.only(top: 250, right: 20),
                         child: SizedBox(
                           width: double.infinity,
                           height: 40,
@@ -196,11 +191,14 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             onPressed: isFormValid ? (){
                               //isi if pilih siswa masuk halaman siswa, else masuk admin stan 
-        
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (context) =>HomePageAdmin()));
                             }
                               : null, //ketika tidak full diisi elevated button akan tdk bisa ditekan 
                             child: const Text(
-                              "Sign Up",
+                              "Daftar Stan",
                               style:  TextStyle(
                                 fontFamily: 'Outfit',
                                 color: Colors.white,
