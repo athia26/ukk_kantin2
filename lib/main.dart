@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kantin2_ukk/screens/pages/admin/homeAdmin.dart';
 import 'package:kantin2_ukk/screens/pages/siswa/homeSiswa.dart';
 import 'package:kantin2_ukk/screens/pages/loginPage.dart';
-import 'package:kantin2_ukk/screens/pages/signupPage.dart';
-import 'package:kantin2_ukk/screens/components/cardStan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,8 +16,10 @@ class MyApp extends StatelessWidget {
     return  MaterialApp(
       initialRoute: '/login',
       routes: {
-        '/home': (context) => HomePageSiswa(),
-        '/login': (context) => LoginPage(),
+        
+        '/login': (context) => const LoginPage(),
+        '/homeSiswa': (context) => const HomePageSiswa(),
+        '/homeAdmin': (context) => const HomePageAdmin(),
       },
       debugShowCheckedModeBanner: false,
       

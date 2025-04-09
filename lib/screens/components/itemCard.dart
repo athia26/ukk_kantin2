@@ -25,10 +25,10 @@ class Itemcard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: Color(0xffE8DCCC),
+            color: const Color(0xffE8DCCC),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(10)
@@ -48,7 +48,7 @@ class Itemcard extends StatelessWidget {
                   ),
                 ), 
       
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 
                 Expanded(
                   child: 
@@ -75,7 +75,7 @@ class Itemcard extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: 7),
+                      const SizedBox(height: 7),
                       count == 0 
                       ? Row(
                         children: [
@@ -96,9 +96,9 @@ class Itemcard extends StatelessWidget {
                               width: 30,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: Color(0xffFFF3F0),
+                                color: const Color(0xffFFF3F0),
                                 border: Border.all(
-                                  color: Color(0xffD74339),
+                                  color: const Color(0xffD74339),
                                 ),
                                 borderRadius: BorderRadius.circular(360),
                               ),
@@ -125,9 +125,9 @@ class Itemcard extends StatelessWidget {
                             Container(
                               height: 30,
                               decoration: BoxDecoration(
-                                color: Color(0xffFFF3F0),
+                                color: const Color(0xffFFF3F0),
                                 border: Border.all(
-                                  color: Color(0xffD74339)
+                                  color: const Color(0xffD74339)
                                 ),
                                 borderRadius: BorderRadius.circular(100),
                               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kantin2_ukk/screens/pages/signupPage.dart';
+import 'package:kantin2_ukk/services/apiServices.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -11,16 +12,140 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
   bool _isInvisible = true; 
+  String? selectedRole;
+  List<String> items = ['Siswa', 'Admin stan']; //daftar dropdown 
 
   bool get isFormValid {
     return 
-    _emailController.text.isNotEmpty &&
-    _passwordController.text.isNotEmpty;
+    _usernameController.text.isNotEmpty &&
+    _passwordController.text.isNotEmpty &&
+    selectedRole != null;
   } 
 
+
+  @override 
+  void initState(){
+    super.initState();
+    selectedRole = items.first;
+    print ("initstate - selected role : $selectedRole");
+  }
+
+  Future <void> login() async{
+    if (isLoading) return;
+    setState(() {
+      isLoading = true;
+    });
+
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+
+    print("Selected role: $selectedRole");
+  
+  try{
+    var response;
+    
+    print("Selected role: $selectedRole");
+    print("mulai login...");
+    print("sebelum panggil API");
+
+      if (selectedRole?.toLowerCase() == 'siswa'){
+        print("panggil api: loginSiswa");
+        response = await Apiservices().loginSiswa(username: username, password: password);
+
+      }else{
+        print("panggil api: loginstand");
+        response = await Apiservices().loginStand(username: username, password: password);
+      }
+      
+      print("setelah panggil api");
+      print("Full Login response ($selectedRole): $response");
+
+      if (response != null && response is Map<String, dynamic> && response.containsKey('statusCode')) {
+      print("Response status: ${response['statusCode']}");
+    }
+    
+    //pengecekan pakai debug untuk cek aja 
+      print("DEBUG: Apakah response null? ${response == null}");
+      print("DEBUG: Apakah response Map? ${response is Map<String, dynamic>}");
+      
+
+      if (response is Map<String, dynamic>) { // Pastikan ini map dulu biar nggak error
+        print("DEBUG: Apakah response punya 'access_token'? ${response.containsKey('access_token')}");
+        print("DEBUG: Apakah response punya 'user'? ${response.containsKey('user')}");
+      }
+    //pengecekan pakai debug untuk cek aja 
+
+      if (response != null && response is Map<String,dynamic> &&response.containsKey('token')){
+        String token = response['token'] ?? '';
+        String? role = response ['role'] ?? '';
+        String? idStan = response ['maker_id']?.toString() ?? '';
+
+        print("Login sukses! Token: $token, Role: $role, ID Stan: $idStan");
+
+        await saveLoginData(token, role, idStan);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login sukses")));
+      } else {
+        print("login gagal! ");
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login Gagal')));
+      }
+    } catch(e){
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("tejadi kesalahan")));
+    }
+    
+
+    setState(() {
+      isLoading = false;
+    });
+
+    
+  }
+
+  Future <void> saveLoginData(
+      String token, String? role, String? makerId) async{
+        if (role == null){
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Error: Role is null!")),
+          );
+          return;
+        }
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        await prefs.setString('user_role', role);
+
+        if (role == 'admin_stan'){
+          if (makerId != null && makerId.isNotEmpty){
+            await prefs.setString('maker_id', makerId);
+            print("maker_id berhasil disimpan: $makerId");
+
+          } else if(role == 'admin_stan'){
+          print('warning: makerId NULL atau kosong!');
+          
+        } 
+        }
+        setState(() {
+          isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login berhasil sebagai $role")),
+        );
+
+        if (role == 'siswa'){
+          Navigator.pushReplacementNamed(context, '/homeSiswa');
+        } else if(role == 'admin_stan'){
+          Navigator.pushReplacementNamed(context, '/homeAdmin');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error: Role tidak valid'))
+          );
+        }
+      }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 40),
                   Column(
                     children: [
-                      //input email
+                      //input username
                       Padding(
                         padding: const EdgeInsets.only(right: 20, top: 10),
                         child: TextFormField(
@@ -67,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 14,
                             fontWeight: FontWeight.w300,
                           ),
-                          controller: _emailController,
+                          controller: _usernameController,
                           decoration: const InputDecoration(
                       
                              focusedBorder: OutlineInputBorder(
@@ -79,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Email Kamu",
+                            labelText: "Username",
                             floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -117,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
-                            labelText: "Password kamu",
+                            labelText: "Password",
                             floatingLabelStyle: const TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
@@ -145,9 +270,69 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20, top: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding:  EdgeInsets.only(left: 5.0, bottom: 3),
+                              child:  Text(
+                                "Pilih role akunmu",
+                                style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey,),
+                                  borderRadius: BorderRadius.circular(5)
+                              ),
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 10, left: 7),
+                                child: DropdownButton<String>(
+                                  underline: const SizedBox(),
+                                  style: const TextStyle(
+                                    fontFamily: 'Outfit',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w300,
+                                  ),
+                                  value: selectedRole,
+                                  hint: const Text("Pilih", style: TextStyle(
+                                    fontSize: 14,
+                                  ),),
+                                  isExpanded: true,
+                                  items: items.map((String item){
+                                    return DropdownMenuItem(
+                                      value: item,
+                                      child: Text(item, 
+                                        style: const TextStyle(
+                                          color: Colors.black
+                                        ),)
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedRole = newValue;
+                                      }
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+
         
                       Padding(
-                        padding: const EdgeInsets.only(top: 300, right: 20),
+                        padding: const EdgeInsets.only(top: 150, right: 20),
                         child: Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +367,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
         
                       Padding(
-                        padding: const EdgeInsets.only(top: 90, right: 20),
+                        padding: const EdgeInsets.only(top: 150, right: 20),
                         child: SizedBox(
                           width: double.infinity,
                           height: 40,
@@ -191,16 +376,21 @@ class _LoginPageState extends State<LoginPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)
                               ),
-                              backgroundColor: isFormValid ? const Color(0xffD74339) :  Color(0xffEBA19C) ,
+                              backgroundColor: isFormValid ? const Color(0xffD74339) :  const Color(0xffEBA19C) ,
                               foregroundColor: Colors.white
                             ),
-                            onPressed: isFormValid ? (){
-                              //isi if pilih siswa masuk halaman siswa, else masuk admin stan 
-        
+                            onPressed: isFormValid ? ()  {
+                             
+
+                                login();
+
+                               
                             }
                               : null, //ketika tidak full diisi elevated button akan tdk bisa ditekan 
-                            child: const Text(
-                              "Sign Up",
+                            child: isLoading 
+                            ? const CircularProgressIndicator() 
+                            : const Text(
+                              "Masuk",
                               style:  TextStyle(
                                 fontFamily: 'Outfit',
                                 color: Colors.white,

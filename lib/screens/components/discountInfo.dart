@@ -13,7 +13,7 @@ class _DiscountInfoState extends State<DiscountInfo> {
   @override
   Widget build(BuildContext context) {
     return  Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(8),
@@ -37,7 +37,7 @@ class _DiscountInfoState extends State<DiscountInfo> {
             ),
           ),
           Expanded(child: Container()),
-          IconButton(onPressed: (){}, icon: Icon(Icons.arrow_forward_ios))
+          IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_forward_ios))
           
           
           

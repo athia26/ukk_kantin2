@@ -218,7 +218,7 @@ class _CardStanState extends State<CardStan> {
           
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(10,27,10,10),
+                      padding: const EdgeInsets.fromLTRB(10,27,10,10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,

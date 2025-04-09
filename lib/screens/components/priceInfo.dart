@@ -8,7 +8,7 @@ class Priceinfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(8),
@@ -17,7 +17,7 @@ class Priceinfo extends StatelessWidget {
         mainAxisAlignment: 
         MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             'Total',
             style:  TextStyle(
               fontFamily: 'Outfit',
@@ -28,7 +28,7 @@ class Priceinfo extends StatelessWidget {
           ),
           Text(
             price,
-            style:  TextStyle(
+            style:  const TextStyle(
               fontFamily: 'Outfit',
               fontSize: 18,
               fontWeight: FontWeight.w400,

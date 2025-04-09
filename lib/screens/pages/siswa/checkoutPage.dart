@@ -45,7 +45,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         ),
 
         body: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Expanded(
@@ -60,7 +60,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(6),
+                                padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: Colors.red,
@@ -79,7 +79,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                               ),
 
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Expanded(child: Text(
                                 item['name'],
                                 style: const TextStyle(
@@ -103,18 +103,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ],
                           ),
 
-                          Divider(),
+                          const Divider(),
                         ],
                       ),
                     );
                   }
                 ),
               ),
-              Divider(),
-              DiscountInfo(),
-              SizedBox(height: 13),
+              const Divider(),
+              const DiscountInfo(),
+              const SizedBox(height: 13),
               Priceinfo(price: 'Rp.$totalPrice'),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
 
               Column(
                 children: [
@@ -125,9 +125,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         Navigator.pushReplacementNamed(context, '/home');
                       }, 
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffD74339),
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: Color(0xffD74339),),
+                        backgroundColor: const Color(0xffD74339),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: Color(0xffD74339),),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)
                         )
@@ -143,7 +143,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       )
                     ),
                   ),
-                  SizedBox(height: 13),
+                  const SizedBox(height: 13),
 
                   
                   SizedBox(
@@ -155,9 +155,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Navigator.pushReplacementNamed(context, '/home');
                         }, 
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xffD74339),
-                          padding: EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: Color(0xffD74339),),
+                          backgroundColor: const Color(0xffD74339),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: const BorderSide(color: Color(0xffD74339),),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)
                           )

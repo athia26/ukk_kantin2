@@ -147,13 +147,13 @@ class _MenuStanSiswaState extends State<MenuStanSiswa> {
                 ],
               ),
 
-              SizedBox(height: 75,),
+              const SizedBox(height: 75,),
               Center(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: ListView(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       _buildCategorySection('Makanan', widget.stans['makanan']),
                       _buildCategorySection("Minuman", widget.stans['minuman']),
@@ -171,7 +171,7 @@ class _MenuStanSiswaState extends State<MenuStanSiswa> {
       bottomNavigationBar: itemCounts.values.any((count) => count > 0 ) 
       ? BottomAppBar(
         child: Padding(
-                padding: EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 10),
                 child: Container(
                   color: Colors.white,
                   width: double.infinity,
@@ -192,14 +192,14 @@ class _MenuStanSiswaState extends State<MenuStanSiswa> {
                     }, 
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffD74339),
+                      backgroundColor: const Color(0xffD74339),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)
                       )
                     ),
                     child: const Text(
                       "Beli",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Outfit',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -251,7 +251,7 @@ class _MenuStanSiswaState extends State<MenuStanSiswa> {
                 });
               },
             );
-          }).toList(),
+          }),
         ],
       ),
     );

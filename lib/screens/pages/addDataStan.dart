@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:kantin2_ukk/screens/pages/admin/homeAdmin.dart';
-import 'package:kantin2_ukk/screens/pages/signupPage.dart';
+import 'package:kantin2_ukk/services/apiServices.dart';
 
 class AddDataStan extends StatefulWidget {
-  const AddDataStan({super.key});
+  final String namaLengkap;
+  final String email;
+  final String username; 
+  final String password; 
+  const AddDataStan({super.key, 
+  required this.namaLengkap, 
+  required this.email,
+  required this.username,
+  required this.password});
 
   @override
   State<AddDataStan> createState() => _AddDataStanState();
@@ -13,6 +20,7 @@ class _AddDataStanState extends State<AddDataStan> {
   final TextEditingController _namaStanController = TextEditingController();
   final TextEditingController _namaPemilikController = TextEditingController();
   final TextEditingController _noTelpController = TextEditingController();
+  bool isLoading = false;
 
   bool get isFormValid {
     return _namaStanController.text.isNotEmpty &&
@@ -20,6 +28,57 @@ class _AddDataStanState extends State<AddDataStan> {
     _noTelpController.text.isNotEmpty;
     
   } 
+
+  Future<void> registerAdminStan() async{
+    setState(() {
+      isLoading = true;
+    });
+
+    
+    String namaStan = _namaStanController.text.trim();
+    String namaPemilik = _namaPemilikController.text.trim();
+    String noTelp = _noTelpController.text.trim();
+
+    print("===Register Stan===");
+    print("nama lengkap: ${widget.namaLengkap}");
+    print("email: ${widget.email}");
+    print("username: ${widget.username}");
+    print("password: ${widget.password}");
+    print("nama stan: $namaStan");
+    print("nama pemilik: $namaPemilik");
+    print("no telepon: $noTelp");
+
+
+    try{
+      var response = await Apiservices().registerStan(
+        namaLengkap: widget.namaLengkap,
+        email: widget.email,
+        username: widget.username,
+        password: widget.password,
+        namaStan: namaStan, 
+        namaPemilik: namaPemilik, 
+        telp: noTelp);
+
+        print("response dari api: $response");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registrasi berhasil, silakan login!')),
+        );
+
+        Navigator.pushReplacementNamed(context, '/login');
+    } catch(e){
+      print("exception: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Terjadi kesalahan saat registrasi"))
+      );
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,23 +166,23 @@ class _AddDataStanState extends State<AddDataStan> {
                           controller: _namaPemilikController,
                           decoration:  const InputDecoration(
                       
-                             focusedBorder: const OutlineInputBorder(
+                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0xffD74339),
                               ),
                             ),
-                            enabledBorder: const OutlineInputBorder(
+                            enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
                             labelText: "Nama Pemilik",
-                            floatingLabelStyle: const TextStyle(
+                            floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
                               fontSize: 14,
                               fontWeight: FontWeight.w300,  
                             ),
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 14,
                               fontWeight: FontWeight.w300,  
@@ -147,23 +206,23 @@ class _AddDataStanState extends State<AddDataStan> {
                           controller: _noTelpController,
                           decoration:  const InputDecoration(
                       
-                             focusedBorder: const OutlineInputBorder(
+                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0xffD74339),
                               ),
                             ),
-                            enabledBorder: const OutlineInputBorder(
+                            enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Colors.grey
                               )),
                             labelText: "No Telepon",
-                            floatingLabelStyle: const TextStyle(
+                            floatingLabelStyle: TextStyle(
                               color: Color(0xffD74339),
                               fontFamily: 'Outfit',
                               fontSize: 14,
                               fontWeight: FontWeight.w300,  
                             ),
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 14,
                               fontWeight: FontWeight.w300,  
@@ -175,8 +234,9 @@ class _AddDataStanState extends State<AddDataStan> {
                       ),
         
                       
-        
-                      Padding(
+                      isLoading
+                        ? const Center(child: CircularProgressIndicator(),)
+                        : Padding(
                         padding: const EdgeInsets.only(top: 250, right: 20),
                         child: SizedBox(
                           width: double.infinity,
@@ -186,17 +246,13 @@ class _AddDataStanState extends State<AddDataStan> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)
                               ),
-                              backgroundColor: isFormValid ? const Color(0xffD74339) :  Color(0xffEBA19C) ,
+                              backgroundColor:  const Color(0xffD74339),
                               foregroundColor: Colors.white
                             ),
-                            onPressed: isFormValid ? (){
-                              //isi if pilih siswa masuk halaman siswa, else masuk admin stan 
-                                Navigator.push(
-                                  context, 
-                                  MaterialPageRoute(
-                                    builder: (context) =>HomePageAdmin()));
-                            }
-                              : null, //ketika tidak full diisi elevated button akan tdk bisa ditekan 
+                            onPressed: (){
+                              registerAdminStan();
+                            },
+                              
                             child: const Text(
                               "Daftar Stan",
                               style:  TextStyle(

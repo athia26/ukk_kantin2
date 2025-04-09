@@ -19,23 +19,23 @@ class _HomePageSiswaState extends State<HomePageSiswa> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             const Padding(
-              padding: const EdgeInsets.only(left: 15.0),
+              padding: EdgeInsets.only(left: 15.0),
               child: Text("Hello User!", 
-              style: const TextStyle(
+              style: TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 35,
                               fontWeight: FontWeight.w700
                             ),),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             
             //search bar
             Padding(
               padding: const EdgeInsets.only(left: 10.0, right: 10),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10,),
+                padding: const EdgeInsets.symmetric(horizontal: 10,),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
@@ -59,7 +59,7 @@ class _HomePageSiswaState extends State<HomePageSiswa> {
               ),
             ),
       
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             const Padding(
               padding:  EdgeInsets.only(left: 15.0),
               child:  Text("Pilih stan",
@@ -73,8 +73,8 @@ class _HomePageSiswaState extends State<HomePageSiswa> {
             
             SizedBox(
               height: MediaQuery.of(context).size.height *0.7,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: 20.0),
                 child: CardStan(),
               ))
       
