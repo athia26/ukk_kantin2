@@ -83,6 +83,7 @@ class _AddDataStanState extends State<AddDataStan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [

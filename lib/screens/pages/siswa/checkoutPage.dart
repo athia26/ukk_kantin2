@@ -20,106 +20,116 @@ class _CheckoutPageState extends State<CheckoutPage> {
     double totalPrice = items.fold(0, (sum, item){
       return sum + (item['count'] * item ['price']);
     });
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            }, 
-            icon: const  Icon(Icons.arrow_back_ios, color: Colors.black,)
-            ),
-            title: const Text(
-              "Checkout",
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Color(0xffD74339),
-              ),
-            ),
-            centerTitle: true,
-        ),
+    return Scaffold(
 
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index){
-                    final item = items [index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.red,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
+      backgroundColor: Colors.white,
+      
+      body: Padding(
+        padding: const EdgeInsets.only(top: 60),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index){
+                  final item = items [index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.red,
+                                  width: 1,
                                 ),
-                                child: Text(
-                                  '${item['count']}x',
-                                  style: const TextStyle(
-                                fontFamily: 'Outfit',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xffD74339),
-                                  ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${item['count']}x',
+                                style: const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xffD74339),
                                 ),
                               ),
-
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(
-                                item['name'],
-                                style: const TextStyle(
-                                  fontFamily: 'Outfit',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xffD74339),
-                                  ),
-                                ),
-                              ),
-
-                              Text(
-                                'Rp ${item['price']}',
-                                style: const TextStyle(
+                            ),
+    
+                            const SizedBox(width: 12),
+                            Expanded(child: Text(
+                              item['name'],
+                              style: const TextStyle(
                                 fontFamily: 'Outfit',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xffD74339),
                                 ),
                               ),
-                            ],
-                          ),
-
-                          const Divider(),
-                        ],
-                      ),
-                    );
-                  }
-                ),
+                            ),
+    
+                            Text(
+                              'Rp ${item['price']}',
+                              style: const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xffD74339),
+                              ),
+                            ),
+                          ],
+                        ),
+    
+                        const Divider(),
+                      ],
+                    ),
+                  );
+                }
               ),
-              const Divider(),
-              const DiscountInfo(),
-              const SizedBox(height: 13),
-              Priceinfo(price: 'Rp.$totalPrice'),
-              const SizedBox(height: 24),
-
-              Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
+            ),
+            const Divider(),
+            const DiscountInfo(),
+            const SizedBox(height: 13),
+            Priceinfo(price: 'Rp.$totalPrice'),
+            const SizedBox(height: 24),
+    
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: (){
+                      Navigator.pushReplacementNamed(context, '/home');
+                    }, 
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xffD74339),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: const BorderSide(color: Color(0xffD74339),),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                      )
+                    ),
+                    child: const Text(
+                      "Selesaikan Pesanan",
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                      ),
+                    )
+                  ),
+                ),
+                const SizedBox(height: 13),
+    
+                
+                SizedBox(
+                  width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
                     child: ElevatedButton(
                       onPressed: (){
                         Navigator.pushReplacementNamed(context, '/home');
@@ -133,7 +143,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         )
                       ),
                       child: const Text(
-                        "Selesaikan Pesanan",
+                        "Print Pesanan",
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 20,
@@ -143,41 +153,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       )
                     ),
                   ),
-                  const SizedBox(height: 13),
-
-                  
-                  SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: ElevatedButton(
-                        onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/home');
-                        }, 
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xffD74339),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: const BorderSide(color: Color(0xffD74339),),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)
-                          )
-                        ),
-                        child: const Text(
-                          "Print Pesanan",
-                          style: TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white
-                          ),
-                        )
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );

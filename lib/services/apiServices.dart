@@ -1,9 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+class Pesanan {
+  final int idMenu;
+  final int qty;
+
+  Pesanan({required this.idMenu, required this.qty});
+
+  // Konversi ke Map agar bisa dikirim sebagai parameter URL
+  Map<String, dynamic> toMap() {
+    return {
+      'id_menu': idMenu.toString(),
+      'qty': qty.toString(),
+    };
+  }
+}
+
 
 class Apiservices {
   final String baseUrl = 'https://ukk-p2.smktelkom-mlg.sch.id/api/';
@@ -74,7 +90,7 @@ class Apiservices {
     required String noTelp,
     File? foto,
   }) async{
-    var uri = Uri.parse('$baseUrl/ubah_siswa/$id');
+    var uri = Uri.parse('$baseUrl/update_siswa/$id');
 
     var request = http.MultipartRequest("POST", uri);
 
@@ -82,7 +98,6 @@ class Apiservices {
     String? token = prefs.getString("access_token");
     request.headers.addAll({
       "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
       "makerID": makerID,
     });
 
@@ -90,6 +105,8 @@ class Apiservices {
     request.fields['email'] = email;
     request.fields['username'] = username;
     request.fields['maker_id'] = makerID;
+    request.fields['alamat'] = alamat;
+    request.fields['telp'] = noTelp;
 
     if (foto!=null){
       request.files.add(await http.MultipartFile.fromPath('foto', foto.path));
@@ -140,35 +157,7 @@ class Apiservices {
 
 
 
-  //loginstand
-  Future<Map<String,dynamic>> loginStand({
-    required String username,
-    required String password,
-  }) async {
-    var response = 
-      await _login('${baseUrl}login_stan', username, password, 'admin_stan');
-
-    print("Response API: $response");
-
-    if (response['success']){
-      var user = response['user'];
-      
-      if (user != null && user ['maker_id'] != null){
-        String makerID = user['maker_id'].toString();
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('maker_id', makerID);
-
-        print("makerID berhasil disimpan: $makerID");
-      }
-
-      else{
-        print("Warning: MakerID tidak ditemukan dalam response");
-      }
-    }
-
-    return response;
-  }
+  
 
 
 
@@ -424,50 +413,49 @@ class Apiservices {
 
     //getordersiswa 
 
+Future<List<Map<String, dynamic>>> getOrderSiswa(String status) async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        print("Token tidak ditemukan, harap login kembali.");
+        return [];
+      }
 
-    Future<List<Map<String,dynamic>>> getOrderSiswa (String status) async{
-      try {
-        final token = await _getToken();
-        if (token == null){
-          print("Token tidak ditemukan silakan login kembali");
-          return[];
-        }
+      final prefs = await SharedPreferences.getInstance();
+      final storedMakerId = prefs.getString("maker_id") ?? makerID;
 
-        final prefs = await SharedPreferences.getInstance();
-        final storedMakerId = prefs.getString("maker_id") ?? makerID;
+      final response = await http.get(
+        Uri.parse('${baseUrl}showorder/$status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': storedMakerId,
+        },
+      );
 
-        final response = await http.get(
-          Uri.parse('${baseUrl}showorder/status'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'makerID': storedMakerId,
-          },
-        );
-        
-        print("Response showOrder = ${response.body}");
+      print("Response showOrder: ${response.body}");
 
-        if (response.statusCode == 200) {
-          final jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
 
-          if (jsonResponse is Map<String, dynamic> &&
-              jsonResponse.containsKey("data")) {
-            final data = jsonResponse["data"];
+        if (jsonResponse is Map<String, dynamic> &&
+            jsonResponse.containsKey("data")) {
+          final data = jsonResponse["data"];
 
-            if (data is List) {
-              return data.cast<Map<String, dynamic>>();
-            } else if (data is Map<String, dynamic>) {
-              return [data];
-            }
+          if (data is List) {
+            return data.cast<Map<String, dynamic>>();
+          } else if (data is Map<String, dynamic>) {
+            return [data];
           }
         }
-        return [];
-      } catch (e) {
-        print("Error showOrder: $e");
-        return [];
-
       }
+      return [];
+    } catch (e) {
+      print("Error showOrder: $e");
+      return [];
     }
+  }
+
 
     //cetaknota 
 
@@ -566,11 +554,185 @@ class Apiservices {
       }
     }
 
-    g
+    Future <String?> getFoodName (int idMenu) async{
+      try{
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString("access_token");
 
+        if (token == null){
+          print("token tidak ditemukan, harap login");
+          return null;
+        }
+
+        var headers = {
+        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        "makerID": makerID
+        };
+
+        print("Fetching food and drink menu");
+
+        final foodResponse = await http.post(
+          Uri.parse('$baseUrl/getmenufood'),
+          body: jsonEncode({"search": ""}),
+          headers: headers,
+        );
+
+        final drinkResponse = await http.post(
+          Uri.parse('$baseUrl/getmenudrink'),
+          body: jsonEncode({"search": ""}),
+          headers: headers,
+        );
+
+if (foodResponse.statusCode == 200) {
+        final foodData = jsonDecode(foodResponse.body);
+        print("Food Menu Response: ${foodData["data"]}"); // Debugging
+
+        for (var item in foodData["data"]) {
+          if (item["id_menu"] == idMenu) {
+            print("Ditemukan di makanan: ${item["nama_makanan"]}");
+            return item["nama_makanan"];
+          }
+        }
+      } else {
+        print(
+            "Gagal mendapatkan makanan, status code: ${foodResponse.statusCode}");
+      }
+
+      if (drinkResponse.statusCode == 200) {
+        final drinkData = jsonDecode(drinkResponse.body);
+        print("Drink Menu Response: ${drinkData["data"]}"); // Debugging
+
+        for (var item in drinkData["data"]) {
+          if (item["id_menu"] == idMenu) {
+            print("Ditemukan di minuman: ${item["nama_makanan"]}");
+            return item["nama_makanan"];
+          }
+        }
+      } else {
+        print(
+            "Gagal mendapatkan minuman, status code: ${drinkResponse.statusCode}");
+      }
+
+      return null;
+    } catch (e) {
+      print("Error getFoodName: $e");
+      return null;
+      }
+    }
+
+    
+
+    Future<bool> pesanMakanan(int idStan, List<Pesanan> pesanan) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+
+      if (token == null) {
+        throw Exception('Token tidak ditemukan, harap login kembali.');
+      }
+
+      // Bangun parameter pesan[] dalam bentuk array query
+      final queryParams = {
+        'id_stan': idStan.toString(),
+        for (int i = 0; i < pesanan.length; i++) ...{
+          'pesan[$i][id_menu]': pesanan[i].idMenu.toString(),
+          'pesan[$i][qty]': pesanan[i].qty.toString(),
+        }
+      };
+
+      final url =
+          Uri.parse('${baseUrl}pesan').replace(queryParameters: queryParams);
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'makerID': '55',
+      };
+
+      final response = await http.get(url, headers: headers);
+
+      print('[DEBUG] URL: $url');
+      print('[DEBUG] Status Code: ${response.statusCode}');
+      print('[DEBUG] Response Body: ${response.body}');
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print("⚠️ Terjadi kesalahan saat memesan makanan: $e");
+      return false;
+    }
+  }
+
+    Future<Map<String, dynamic>> pesan() async{
+      try{
+        final token = await _getToken();
+        if (token==null){
+          print("token tidak ditemukan silakan login kembali");
+          return{};
+        }
+
+        final response = await http.get(
+          Uri.parse('${baseUrl}pesan'),
+          headers: {
+          "Authorization": "Bearer $token",
+          'Content-Type': 'application/json',
+          'makerID': makerID,
+          },
+          
+        );
+
+
+
+        print("Response Body: ${response.body}");
+
+        if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse is Map<String, dynamic> &&
+            jsonResponse.containsKey("data")) {
+          return jsonResponse["data"];
+        }
+      } else {
+        print(
+            "Gagal mengambil data, status code: ${response.statusCode},");
+        }
+      } catch (e) {
+        print("Error Pesan: $e");
+      }
+      return {};
+    }
 
 
     //stan
+    
+    //loginstand
+  Future<Map<String,dynamic>> loginStand({
+    required String username,
+    required String password,
+  }) async {
+    var response = 
+      await _login('${baseUrl}login_stan', username, password, 'admin_stan');
+
+    print("Response API: $response");
+
+    if (response['success']){
+      var user = response['user'];
+      
+      if (user != null && user ['maker_id'] != null){
+        String makerID = user['maker_id'].toString();
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('maker_id', makerID);
+
+        print("makerID berhasil disimpan: $makerID");
+      }
+
+      else{
+        print("Warning: MakerID tidak ditemukan dalam response");
+      }
+    }
+
+    return response;
+  }
+
     Future<bool> registerStan ({
       required String namaLengkap,
       required String email,
@@ -684,6 +846,140 @@ class Apiservices {
       }
     }
 
+    Future <bool> ubahSiswa({
+    required int id,
+    required String namaSiswa,
+    required String email,
+    required String username,
+    required String alamat,
+    required String noTelp,
+    File? foto,
+  }) async{
+    var uri = Uri.parse('$baseUrl/ubah_siswa/$id');
+
+    var request = http.MultipartRequest("POST", uri);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("access_token");
+    request.headers.addAll({
+      "Authorization": "Bearer $token",
+      "makerID": makerID,
+    });
+
+    request.fields['nama_siswa'] = namaSiswa;
+    request.fields['email'] = email;
+    request.fields['username'] = username;
+    request.fields['maker_id'] = makerID;
+    request.fields['alamat'] = alamat;
+    request.fields['telp'] = noTelp;
+
+    if (foto!=null){
+      request.files.add(await http.MultipartFile.fromPath('foto', foto.path));
+    }
+
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+    var jsonResponse = jsonDecode(responseBody);
+
+    if (response.statusCode == 200 && jsonResponse['status'] == true){
+      print("update sukses: ${jsonResponse['message']}");
+      return true;
+    } else{
+      print('update gagal: ${jsonResponse['message']}');
+      return false;
+    }
+  }
+
+
+    //SHOW MENU
+    Future<List<dynamic>> showMenu() async{
+      try{
+      final token = await _getToken();
+      final response = await http.post(
+        Uri.parse('${baseUrl}showmenu'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': makerID,
+        },
+      );
+
+      print("Response Show Menu: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        return responseData['data'] ?? [];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print("Error Show Menu: $e");
+      return [];
+      }
+    }
+
+
+    //TAMBAH MENU
+    Future <bool> tambahMenu({
+      required String namaMakanan,
+      required String jenis,
+      required String harga,
+      required String deskripsi,
+      required int makerID,
+      File? foto,
+    }) async{
+      try {
+
+        var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}tambahmenu'))
+        ..headers.addAll(await _getAuthHeaders())
+        ..fields.addAll({
+          'nama_makanan' : namaMakanan,
+          'jenis': jenis,
+          'harga': harga,
+          'deskripsi': deskripsi,
+          'makerID': makerID.toString(),
+        });
+
+        if (foto != null){
+          request.files.add(await http.MultipartFile.fromPath('foto', foto.path));
+        }
+
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        print ('Tambah menu response: $responseBody');
+
+        return response.statusCode == 200;
+
+      } catch(e){
+        print('Exception occured: $e');
+        return false;
+      }
+    }
+
+
+    //HAPUS MENU
+    Future<bool> hapusMenu({required String menuID}) async{
+      try {
+      var response = await http.delete(
+        Uri.parse('${baseUrl}hapus_menu/$menuID'),
+        headers: await _getAuthHeaders(),
+        body: jsonEncode({'id': menuID}),
+      );
+
+      print("Response Hapus Menu: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Error hapusMenu: $e");
+      return false;
+      }
+    }
+
+
 
     //GET PEMASUKAN 
     Future <List<dynamic>> getPemasukan (String tanggal) async {
@@ -730,49 +1026,52 @@ class Apiservices {
     }
 
     //GET ORDER ADMIN 
-    Future <List<Map<String,dynamic>>> getOrderAdmin(String status) async {
-      try{
-        final token = await _getToken();
-        if (token == null){
-          print("Token tidak ditemukan, harap login lagi");
-          return [];
-        }
+    Future<List<Map<String, dynamic>>> getOrderAdmin(String status) async {
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        print("Token tidak ditemukan, harap login kembali.");
+        return [];
+      }
 
-        final prefs = await SharedPreferences.getInstance();
-        final storedMakerId = prefs.getString("maker_id")?? makerID;
+      final prefs = await SharedPreferences.getInstance();
+      final storedMakerId = prefs.getString("maker_id") ?? makerID;
 
-        final response = await http.get(
-          Uri.parse('${baseUrl}getorder/$status'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-            'makerID': storedMakerId,
-          },
-        );
+      final response = await http.get(
+        Uri.parse('${baseUrl}getorder/$status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': storedMakerId,
+        },
+      );
 
-        print ("response getOrder: ${response.body}");
+      print("Response getOrder: ${response.body}");
 
-        if (response.statusCode == 200){
-          final jsonResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
 
-          if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey("data")){
-            final data = jsonResponse ["data"];
+        if (jsonResponse is Map<String, dynamic> &&
+            jsonResponse.containsKey("data")) {
+          final data = jsonResponse["data"];
 
-            if (data is List){
-              return data.cast<Map<String,dynamic>>();
-            } else if (data is Map<String,dynamic>){
-              return [data];
-            }
+          if (data is List) {
+            return data.cast<Map<String, dynamic>>();
+          } else if (data is Map<String, dynamic>) {
+            return [data];
           }
         }
-
-        return [];
-      } catch (e){
-        print("error getOrder: $e");
-        return[];
       }
+      return [];
+    } catch (e) {
+      print("Error getOrder: $e");
+      return [];
     }
+  }
 
+
+
+    //GET ORDER ADMIN BELUM 
     Future<List<Map<String,dynamic>>> getOrderAdminBelum() async{
       try {
       final token = await _getToken();
@@ -816,6 +1115,9 @@ class Apiservices {
     }
   }
 
+
+
+  //GET ORDER ADMIN SELESAI
   Future<List<Map<String, dynamic>>> getOrderAdminSelesai() async {
     try {
       final token = await _getToken();
@@ -859,9 +1161,300 @@ class Apiservices {
     }
   }
 
+  Future<bool> updateOrderStatus(String idPesanan, String status) async{
+     try {
+      final token = await _getToken();
+      if (token == null) {
+        print("Token tidak ditemukan, harap login kembali.");
+        return false;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final storedMakerId = prefs.getString("maker_id") ?? makerID;
+
+      final response = await http.put(
+        Uri.parse('${baseUrl}updatestatus/$idPesanan'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': storedMakerId,
+        },
+        body: jsonEncode({"status": status}),
+      );
+
+      print("Response updateOrder: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse["status"] == true;
+      }
+      return false;
+    } catch (e) {
+      print("Error updateOrderStatus: $e");
+      return false;
+    }
+  }
+
+  Future<List<dynamic>> showDiskon() async {
+      try {
+        final token = await _getToken();
+        final response = await http.post(
+          Uri.parse('${baseUrl}showdiskon'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'makerID': makerID,
+          },
+        );
+
+        print("Response Show Diskon: ${response.body}");
+
+        if (response.statusCode == 200) {
+          var responseData = jsonDecode(response.body);
+          return responseData['data'] ?? [];
+        } else {
+          return [];
+        }
+      } catch (e) {
+        print("Error Show Diskon: $e");
+        return [];
+      }
+    }
+
+  Future<bool> tambahDiskon({
+    required String namaDiskon,
+    required int presentase,
+    required DateTime tanggalMulai,
+    required DateTime tanggalSelesai,
+  }) async {
+    try {
+      String makerID = "55";
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${baseUrl}tambahdiskon'),
+      )
+        ..headers.addAll(await _getAuthHeaders())
+        ..fields.addAll({
+          'nama_diskon': namaDiskon,
+          'persentase_diskon': presentase.toString(),
+          'tanggal_awal': tanggalMulai.toIso8601String().split('T')[0],
+          'tanggal_akhir': tanggalSelesai.toIso8601String().split('T')[0],
+          'makerID': makerID,
+        });
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      print('Tambah Diskon Response: $responseBody');
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Exception occurred: $e');
+      return false;
+    }
+  }
+
+  Future <List<dynamic>> getDiskon() async{
+    try{
+      final token = await _getToken();
+      final response = await http.post(
+        Uri.parse('${baseUrl}getmenudiskonsiswa'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': makerID,
+        }
+      );
+
+      print("Response get diskon: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        return responseData['data'] ?? [];
+      } else {
+        return [];
+      }
+    } catch(e){
+      print("Error get diskon: $e");
+      return[];
+    }
+  }
 
 
-    
+  Future<bool> tambahMenuDiskon({
+    required int idDiskon,
+    required int idMenu,
+  }) async{
+    try{
+      String makerID = "55";
+      var request = http.MultipartRequest(
+        'POST', 
+        Uri.parse('${baseUrl}insert_menu_diskon'),
+
+      )
+        ..headers.addAll(await _getAuthHeaders())
+        ..fields.addAll({
+          'id_diskon': idDiskon.toString(),
+          'id_menu': idMenu.toString(),
+          'maker_id': makerID
+
+        });
+
+        print('Request URL: ${request.url}');
+        print('Fields: ${request.fields}');
+
+        var response = await request.send();
+        var responseBody = await response.stream.bytesToString();
+        print('Tambah Menu Diskon Response: $responseBody');
+
+        return response.statusCode == 200;
+      } catch (e) {
+        print('Error di tambahMenuDiskon: $e');
+        return false;
+      
+        }
+      }
+
+  Future <List<dynamic>> getDiskonMenu() async{
+    try{
+      final token = await _getToken();
+      final response = await http.post(
+        Uri.parse('${baseUrl}getmenudiskon'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'makerID': makerID,
+        }
+      );
+
+      print("Response get diskon: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        return responseData['data'] ?? [];
+      } else {
+        return [];
+      }
+    } catch(e){
+      print("Error get diskon: $e");
+      return[];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getRekapPemesananStan(String bulan) async {
+  try {
+    final token = await _getToken();
+    if (token == null) {
+      print("Token tidak ditemukan, harap login kembali.");
+      return [];
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final storedMakerId = prefs.getString("maker_id") ?? makerID;
+
+    final response = await http.get(
+      Uri.parse('${baseUrl}showorderbymonth/$bulan'), // <- di sini pakai format YYYY-MM
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'makerID': storedMakerId,
+      },
+    );
+
+    print("Response showorderbymonth: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse is Map<String, dynamic> &&
+          jsonResponse.containsKey("data")) {
+        final data = jsonResponse["data"];
+
+        if (data is List) {
+          return data.cast<Map<String, dynamic>>();
+        } else if (data is Map<String, dynamic>) {
+          return [data];
+        }
+      }
+    }
+    return [];
+  } catch (e) {
+    print("Error getRekapPemesananStanByMonth: $e");
+    return [];
+  }
+}
+
+
+
+Future<Map<String, dynamic>> getRekapPemasukanStan(String bulan) async {
+  try {
+    final token = await _getToken();
+    if (token == null) {
+      print("Token tidak ditemukan, harap login kembali.");
+      return {};
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final storedMakerId = prefs.getString("maker_id") ?? makerID;
+
+    final response = await http.get(
+      Uri.parse('${baseUrl}showpemasukanbybulan/$bulan'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'makerID': storedMakerId,
+      },
+    );
+
+    print("Response showorderbymonth: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse is Map<String, dynamic> && jsonResponse.containsKey("data")) {
+        final data = jsonResponse["data"];
+
+        if (data is Map<String, dynamic> && data.containsKey("data_transaksi")) {
+          final transaksiList = data["data_transaksi"] as List;
+
+          int totalPemasukan = 0;
+
+          // Loop untuk hitung pemasukan berdasarkan harga_beli
+          for (var transaksi in transaksiList) {
+            final detail = transaksi["detailTrans"] as List;
+
+            // Hitung total harga_beli untuk setiap transaksi
+            for (var item in detail) {
+              final hargaBeliRaw = item["harga_beli"];
+              final hargaBeli = hargaBeliRaw is int
+                  ? hargaBeliRaw
+                  : int.tryParse(hargaBeliRaw.toString()) ?? 0;
+
+              totalPemasukan += hargaBeli; // Akumulasi total pemasukan
+            }
+          }
+
+          // Return hasil rekap data
+          return {
+            "bulan": data["bulan"] ?? "Unknown",
+            "total_pemasukan": totalPemasukan,
+            "data_transaksi": transaksiList,
+          };
+        }
+      }
+    }
+
+    return {}; // Jika tidak ada data
+  } catch (e) {
+    print("Error getRekapPemasukanStanByMonth: $e");
+    return {}; // Jika terjadi error
+  }
+}
+
+
+
+  
+
 
   Future<Map<String, String>> _getAuthHeaders() async{
     String? token = await _getToken();
@@ -872,7 +1465,6 @@ class Apiservices {
     };
   }
 
-
-
+  getRekapPemesananStanByMonth(String selectedMonth) {}
 
 }

@@ -150,6 +150,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -337,7 +338,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Don't have an account?",
+                              const Text("Tidak punya akun?",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Outfit',
@@ -351,7 +352,7 @@ class _LoginPageState extends State<LoginPage> {
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()));
                                 },
-                                child: const Text("Sign Up here",
+                                child: const Text("Daftar disini",
                                 style: TextStyle(
                                   color: Color(0xffD74339),
                                   fontFamily: 'Outfit',

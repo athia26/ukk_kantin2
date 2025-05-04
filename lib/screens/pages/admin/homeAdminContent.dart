@@ -4,6 +4,9 @@ import 'package:kantin2_ukk/screens/components/helloAdmin.dart';
 import 'package:kantin2_ukk/screens/components/orderBox.dart';
 import 'package:kantin2_ukk/screens/components/pemasukanAdmin.dart';
 import 'package:kantin2_ukk/screens/pages/admin/editStan.dart';
+import 'package:kantin2_ukk/screens/pages/admin/historyAdmin.dart';
+import 'package:kantin2_ukk/screens/pages/admin/page/siswaAdminPage.dart';
+import 'package:kantin2_ukk/screens/pages/admin/rekapOrderAdmin.dart';
 import 'package:kantin2_ukk/services/apiServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,12 +22,16 @@ class _HomeAdminContentState extends State<HomeAdminContent> {
   int _pemasukan = 0;
   List<Map<String,dynamic>> _stanList = [];
   int _countOrderBelum = 0;
-  final int _countOrderSelesai = 0;
+  int _countOrderSelesai = 0;
 
 
   @override
   void initState(){
-
+    super.initState();
+    loadAdminData();
+    fetchPemasukan();
+    _fetchOrderBelum();
+    _fetchOrderSelesai();
   }
 
   Future <void> loadAdminData() async{
@@ -84,23 +91,27 @@ class _HomeAdminContentState extends State<HomeAdminContent> {
   }
 
 
+
+
   Future <void> _fetchOrderBelum() async{
     final orderList = await Apiservices().getOrderAdminBelum();
+    print("order belum: $orderList");
     setState(() {
-      _countOrderBelum = 0;
+      _countOrderBelum = orderList.length;
     });
   }
 
   Future<void> _fetchOrderSelesai() async{
     final orderList = await Apiservices().getOrderAdminSelesai();
     setState(() {
-      _countOrderSelesai;
+      _countOrderSelesai = orderList.length;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayName = "Hello, ${kantinName[0].toUpperCase()}${kantinName.substring(1)}";
+    final displayName = "Halo, ${kantinName.split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : '').join(' ')}";
+
     
     return Scaffold(
       backgroundColor: Colors.white,
@@ -110,20 +121,84 @@ class _HomeAdminContentState extends State<HomeAdminContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HelloAdmin(
-                kantin: displayName, 
-                icon: Icons.person, 
-                iconColor: const Color(0xffD74339),
-                onEdit: _editStan,
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                
+                child: Row(
+                  children: [
+                    Text(
+                      displayName,
+                      style: const TextStyle(
+                        fontFamily: 'Outfit',
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700),
+                    ),
+
+                    const Spacer(),
+                    IconButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SiswaAdminPage()));
+                      }, 
+                      icon: Icon(
+                        Icons.person_add_alt_1_rounded, 
+                        color: Color(0xffD74339),
+                      )
+                    )
+                  ],
+                ),
+
+                
               ),
               const SizedBox(height: 16),
               OrderBox(running: _countOrderBelum, request: _countOrderSelesai),
               const SizedBox(height: 16),
               Pemasukan(penghasilan: _pemasukan),
               const SizedBox(height: 34,),
-              const Text("Histori Transaksi"),
-              const SizedBox(height: 12,)
-              
+               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                   const Text("Histori Transaksi", 
+                      style:  const TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color:Color(0xffD74339),
+                            ),
+                          ),
+                  InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> RekapOrderAdmin()));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color:  Color(0xffD74339),
+                      
+                    ),
+                    child: const Row(
+                      children: [
+                        const Text(
+                          "Lihat Rekap ",
+                          style: const TextStyle(
+                                fontFamily: 'Outfit',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                            ),
+                        ),
+
+                        Icon(Icons.arrow_forward_ios_rounded, 
+                        color: Colors.white,
+                        size: 10,)
+                      ],
+                    ),
+                  ),
+                )
+                ],
+              ),
+              const SizedBox(height: 12,),
+              HistoryAdmin()
 
             ],
           ),

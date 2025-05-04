@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kantin2_ukk/screens/components/bottomNavbarAdmin.dart';
 import 'package:kantin2_ukk/screens/pages/admin/homeAdminContent.dart';
 import 'package:kantin2_ukk/services/apiServices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,14 +57,14 @@ class _HomePageAdminState extends State<HomePageAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: PageView(
-          children: const [
-            HomeAdminContent()
-          ],
-        ),
-      ),);   
+    return  Scaffold(
+      backgroundColor: Colors.white,
+      body: PageView(
+        children: const [
+          HomeAdminContent()
+        ],
+      ),
+      bottomNavigationBar: NavbarAdmin(),
+    );
   }
 }
